@@ -4,17 +4,17 @@
 import RPi.GPIO as GPIO
 import serial
 
-arduinoData = serial.Serial('/dev/ttyACM1',9600)
-
-while (1==1):
-    if(arduinoData.inWaiting() > 0):
-        myData = arduinoData.readline()
-        print (myData)
+arduinoData = serial.Serial('/dev/ttyACM0',9600)
 
 
-"""class sensors(object):
+class sensors(object):
 	
 	def __inti__(self):
 		GPIO.setwarnings(False)
+		
+	def counter(self):	
+            while (1==1):
+                if(arduinoData.inWaiting() > 0):
+                    myData = int(arduinoData.readline().strip())
+                    return (myData)
 
-"""
