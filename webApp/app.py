@@ -3,18 +3,33 @@ import temp_sensor as tem
 from flask import *
 from pymongo import MongoClient
 
-db = MongoClient('mongodb://jason:itslit101@ds235785.mlab.com:35785/smart_tank')
 
-ardi = sense.sensors()
+client = MongoClient('mongodb://jason:itslit101@ds235785.mlab.com:35785/smart_tank') #conncets to database
+ardi = sense.sensors() # connects to arduino
+app = Flask(__name__) #flask init
 
-app = Flask(__name__)
+db = client.smart_tank
 
+"""
+# this is an example on how to insert data into db
+userTest = {
+        "Name" : "Jason",
+        "Email" : "jasonm718@gmail.com"
+    }
+
+db.smart_tank.insert(userTest)
+"""
 @app.route("/")
 
 def index():
-    count = ardi.counter()
-    tempF = tem.read_temp_F()
-    tempC = tem.read_temp_C()
+    
+    count = ardi.counter() #gets number from arduino
+    tempF = tem.read_temp_F() #get Farenheit temp through Gpio
+    tempC = tem.read_temp_C() #get Celcius temp through Gpio
+    
+    
+    
+    #render index.html and sends variables 
     return render_template('index.html', tempC = tempC, tempF = tempF, count = count)
 
 
