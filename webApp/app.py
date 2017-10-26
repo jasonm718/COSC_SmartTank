@@ -1,5 +1,9 @@
 import sense
+import temp_sensor as tem
 from flask import *
+from pymongo import MongoClient
+
+db = MongoClient('mongodb://jason:itslit101@ds235785.mlab.com:35785/smart_tank')
 
 ardi = sense.sensors()
 
@@ -9,7 +13,9 @@ app = Flask(__name__)
 
 def index():
     count = ardi.counter()
-    return render_template('index.html', count = count)
+    tempF = tem.read_temp_F()
+    tempC = tem.read_temp_C()
+    return render_template('index.html', tempC = tempC, tempF = tempF, count = count)
 
 
 # starts the flask serverlistening on the pi port 5000
