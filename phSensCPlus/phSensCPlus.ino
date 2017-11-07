@@ -17,7 +17,7 @@ void setup(void)
 {
   pinMode(LED,OUTPUT);  
   Serial.begin(9600);  
-  Serial.println("pH meter experiment!");    //Test the serial monitor
+  //Serial.println("pH meter experiment!");    //Test the serial monitor
 }
 void loop(void)
 {
@@ -34,9 +34,9 @@ void loop(void)
   }
   if(millis() - printTime > printInterval)   //Every 800 milliseconds, print a numerical, convert the state of the LED indicator
   {
-	Serial.print("Voltage:");
-        Serial.print(voltage,2);
-        Serial.print("    pH value: ");
+	//Serial.print("Voltage:");
+        //Serial.print(voltage,2);
+        //Serial.print("    pH value: ");
 	Serial.println(pHValue,2);
         digitalWrite(LED,digitalRead(LED)^1);
         printTime=millis();

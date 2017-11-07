@@ -15,6 +15,6 @@ class sensors(object):
 	def counter(self):	
             while (1==1):
                 if(arduinoData.inWaiting() > 0):
-                    myData = int(arduinoData.readline().strip())
+                    myData = arduinoData.readline().strip()
                     return (myData)
 
