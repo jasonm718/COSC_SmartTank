@@ -1,15 +1,50 @@
 import sense
+import temp_sensor as tem
+import time
+from datetime import datetime
 from flask import *
+from pymongo import MongoClient
 
-ardi = sense.sensors()
 
-app = Flask(__name__)
+client = MongoClient('mongodb://jason:itslit101@ds235785.mlab.com:35785/smart_tank') #conncets to database
+ardi = sense.sensors() # connects to arduino
+app = Flask(__name__) #flask init
 
+db = client.smart_tank
+
+while True:
+    tempF = tem.read_temp_F()
+    pH = ardi.counter() #gets number from arduino
+    data = {
+        "Temp" : tempF,
+        "ph" : pH,
+        "t_stamp" : datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }
+
+    db.smart_tank.insert(data)
+    time.sleep(5)
+
+"""
+# this is an example on how to insert data into db
+userTest = {
+        "Name" : "Jason",
+        "Email" : "jasonm718@gmail.com"
+    }
+
+db.smart_tank.insert(userTest)
+"""
 @app.route("/")
 
 def index():
-    count = ardi.counter()
-    return render_template('index.html', count = count)
+    
+    pH = ardi.counter() #gets number from arduino
+    tempF = tem.read_temp_F() #get Farenheit temp through Gpio
+    tempC = tem.read_temp_C() #get Celcius temp through Gpio
+    
+    
+    
+    #render index.html and sends variables 
+    return render_template('index.html', tempC = tempC, tempF = tempF, pH = pH)
 
 
 # starts the flask serverlistening on the pi port 5000
