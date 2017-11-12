@@ -9,6 +9,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +22,7 @@ public class MainView extends AppCompatActivity {
     
     SensorAdapter sensors;
     ListView sensors_list;
+    String api_url = "https://smarttank.herokuapp.com/";
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,6 +33,8 @@ public class MainView extends AppCompatActivity {
         sensors = new SensorAdapter();
         populate(sensors);
         sensors_list.setAdapter(sensors);
+        
+        getDataFromServer();
     }
     
     
@@ -88,5 +97,45 @@ public class MainView extends AppCompatActivity {
             holder.panel.setText(sensors.get(position));
             return row;
         }
+    }
+    
+    
+    public void getDataFromServer(){
+    
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+    
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+                try {
+        
+                    URL api = new URL(api_url += "sensors");
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) api.openConnection();
+                    httpURLConnection.setRequestMethod("GET");
+                    httpURLConnection.setRequestProperty("Content-Type", "application/json");
+        
+                                if(httpURLConnection.getResponseCode() == 200){
+                                    System.out.println("connection successful");
+                                }
+        
+                    //part that listens to server's response
+                    BufferedReader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+        
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+        
+                    httpURLConnection.disconnect();
+        
+                } catch (IOException e) {
+                    System.out.println("something wrong with the url");
+                    System.out.println(e.getMessage());
+                }
+                
+                System.out.println(response.toString());
+    
+            }
+        }).start();
     }
 }
