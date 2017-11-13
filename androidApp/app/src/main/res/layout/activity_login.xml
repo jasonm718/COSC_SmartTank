@@ -10,6 +10,12 @@
               android:paddingTop="@dimen/activity_vertical_margin"
               tools:context="cosc4342.smarttank.LoginActivity">
 
+
+    <ImageView
+        android:background="@drawable/smart_tank_logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <!-- Login progress -->
     <ProgressBar
         android:id="@+id/login_progress"

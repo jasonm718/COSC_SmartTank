@@ -9,6 +9,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -23,6 +28,7 @@ public class MainView extends AppCompatActivity {
     SensorAdapter sensors;
     ListView sensors_list;
     String api_url = "https://smarttank.herokuapp.com/";
+    BarChart chart;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -132,6 +138,18 @@ public class MainView extends AppCompatActivity {
                     System.out.println("something wrong with the url");
                     System.out.println(e.getMessage());
                 }
+                
+                
+                chart = (BarChart) findViewById(R.id.chart);
+                List<BarEntry> entries = new ArrayList<>();
+                
+                for(int index = 0; index < 20; index++){
+                    entries.add(new BarEntry(index, 20-index));
+                }
+    
+                BarDataSet dummy_data = new BarDataSet(entries, "Dummy Data");
+    
+                chart.setData(new BarData(dummy_data));
                 
                 System.out.println(response.toString());
     
