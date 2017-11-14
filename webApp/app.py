@@ -12,6 +12,7 @@ app = Flask(__name__) #flask init
 
 db = client.smart_tank
 
+
 def getserial():
   # Extract serial from cpuinfo file
   cpuserial = "0000000000000000"
