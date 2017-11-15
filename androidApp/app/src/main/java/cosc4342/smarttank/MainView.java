@@ -1,5 +1,6 @@
 package cosc4342.smarttank;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -9,36 +10,40 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
-import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.List;
+import org.json.*;
+import com.loopj.android.http.*;
+
+import cz.msebera.android.httpclient.Header;
+
 
 public class MainView extends AppCompatActivity {
     
     SensorAdapter sensors;
     ListView sensors_list;
     String api_url = "https://smarttank.herokuapp.com/";
-    BarChart chart;
+    LineChart chart;
+//    ChartAdapter chartAdapter;
+    ChartDataUpdate model;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_view);
-    
+        model = new ChartDataUpdate();
         sensors_list = (ListView) findViewById(R.id.notification_list);
         sensors = new SensorAdapter();
         populate(sensors);
         sensors_list.setAdapter(sensors);
+        
+        chart = (LineChart) findViewById(R.id.chart);
         
         getDataFromServer();
     }
@@ -55,6 +60,46 @@ public class MainView extends AppCompatActivity {
         sensors.add("Water Level");
         
         list.setSensors(sensors);
+    }
+    
+    
+    
+    
+    class ChartDataUpdate {
+        
+        JSONArray sensor_data;
+        
+        public void setSensorData(JSONArray data) throws JSONException{
+            sensor_data = data;
+            List<JSONObject> entries = new ArrayList<>();
+            
+           
+            for(int index = 0; index < data.length(); index++) {
+                entries.add(data.getJSONObject(index));
+            }
+            
+            updateChart(entries);
+        }
+        
+        public void updateChart(List<JSONObject> entries) throws JSONException{
+           List<Entry> temperatureEntries = new ArrayList<>();
+           List<Entry> phEntries = new ArrayList<>();
+           
+           for(int index = 0; index < entries.size(); index++) {
+               String temp = entries.get(index).getString("Temp");
+               String ph = entries.get(index).getString("ph");
+               String[] time = entries.get(index).getString("t_stamp").split("\\w+-\\w+-\\w+", 2);
+    
+               System.out.println(time[1]);
+               temperatureEntries.add(new Entry(index, Float.parseFloat(temp)));
+               phEntries.add(new Entry(index, Float.parseFloat(ph)));
+           }
+           
+           LineDataSet temperature = new LineDataSet(temperatureEntries, "temperature");
+           LineDataSet ph = new LineDataSet(phEntries, "pH");
+            
+           chart.setData(new LineData(temperature, ph));
+        }
     }
     
     
@@ -103,57 +148,37 @@ public class MainView extends AppCompatActivity {
             holder.panel.setText(sensors.get(position));
             return row;
         }
+        
+        
     }
     
     
+    
     public void getDataFromServer(){
-    
-        new Thread(new Runnable() {
+        
+        
+        SmartTankRestClient.get("/sensors", new TextHttpResponseHandler() {
             @Override
-            public void run() {
-    
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-                try {
-        
-                    URL api = new URL(api_url += "sensors");
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) api.openConnection();
-                    httpURLConnection.setRequestMethod("GET");
-                    httpURLConnection.setRequestProperty("Content-Type", "application/json");
-        
-                                if(httpURLConnection.getResponseCode() == 200){
-                                    System.out.println("connection successful");
-                                }
-        
-                    //part that listens to server's response
-                    BufferedReader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-        
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-        
-                    httpURLConnection.disconnect();
-        
-                } catch (IOException e) {
-                    System.out.println("something wrong with the url");
-                    System.out.println(e.getMessage());
-                }
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                System.out.println(responseString);
                 
-                
-                chart = (BarChart) findViewById(R.id.chart);
-                List<BarEntry> entries = new ArrayList<>();
-                
-                for(int index = 0; index < 20; index++){
-                    entries.add(new BarEntry(index, 20-index));
-                }
-    
-                BarDataSet dummy_data = new BarDataSet(entries, "Dummy Data");
-    
-                chart.setData(new BarData(dummy_data));
-                
-                System.out.println(response.toString());
-    
             }
-        }).start();
+    
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString)  {
+                
+                try {
+//                    JSONArray sensor_data = new JSONArray(responseString);
+//                    for(int index = 0; index < sensor_data.length(); index++){
+//                        System.out.println(sensor_data.getJSONObject(index).toString());
+//                    }
+                    
+                    model.setSensorData(new JSONArray(responseString));
+                }catch (JSONException e){
+                    System.out.println(e);
+                    System.out.println("passing data to JSON array didn't work");
+                }
+            }
+        });
     }
 }

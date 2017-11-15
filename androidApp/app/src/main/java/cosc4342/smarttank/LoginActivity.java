@@ -30,6 +30,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.Proxy;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +67,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    String api_url = "https://smarttank.herokuapp.com/";
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -303,13 +311,43 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
-            
+    
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            OutputStreamWriter writer;
+            HttpURLConnection httpURLConnection;
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
+        
+                URL api = new URL(api_url += "app_login");
+                httpURLConnection = (HttpURLConnection) api.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                if(httpURLConnection.getResponseCode() == 200){
+                    System.out.println("connection successful");
+                    
+//                    writer = new OutputStreamWriter(httpURLConnection.getOutputStream());
+//
+//                    writer.write(mEmail);
+//                    writer.write(mPassword);
+//                    writer.flush();
+
+                }
+        
+                //part that listens to server's response
+                    BufferedReader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+    
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+        
+                httpURLConnection.disconnect();
+        
+            } catch (IOException e) {
+                System.out.println("something wrong with the url");
+                System.out.println(e.getMessage());
             }
+            
+            System.out.println(response.toString());
             
             for(String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
