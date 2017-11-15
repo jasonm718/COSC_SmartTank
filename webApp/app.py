@@ -12,12 +12,29 @@ app = Flask(__name__) #flask init
 
 db = client.smart_tank
 
+
+def getserial():
+  # Extract serial from cpuinfo file
+  cpuserial = "0000000000000000"
+  try:
+    f = open('/proc/cpuinfo','r')
+    for line in f:
+      if line[0:6]=='Serial':
+        cpuserial = line[10:26]
+    f.close()
+  except:
+    cpuserial = "ERROR000000000"
+
+  return cpuserial
+
+
 while True:
     tempF = tem.read_temp_F()
     pH = ardi.counter() #gets number from arduino
     data = {
         "Temp" : tempF,
         "ph" : pH,
+        "serial": getserial(),
         "t_stamp" : datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
 
