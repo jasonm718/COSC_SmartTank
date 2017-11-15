@@ -29,7 +29,8 @@ public class MainView extends AppCompatActivity {
     SensorAdapter sensors;
     ListView sensors_list;
     String api_url = "https://smarttank.herokuapp.com/";
-    LineChart chart;
+    LineChart temp_chart;
+    LineChart ph_chart;
 //    ChartAdapter chartAdapter;
     ChartDataUpdate model;
     
@@ -43,7 +44,8 @@ public class MainView extends AppCompatActivity {
         populate(sensors);
         sensors_list.setAdapter(sensors);
         
-        chart = (LineChart) findViewById(R.id.chart);
+        temp_chart = (LineChart) findViewById(R.id.temperature_chart);
+        ph_chart = (LineChart) findViewById(R.id.ph_chart);
         
         getDataFromServer();
     }
@@ -54,8 +56,6 @@ public class MainView extends AppCompatActivity {
         List<String> sensors = new ArrayList<>();
         sensors.add("pH");
         sensors.add("Temperature");
-        sensors.add("Ammonia");
-        sensors.add("Salinity");
         sensors.add("Nitrates");
         sensors.add("Water Level");
         
@@ -98,7 +98,8 @@ public class MainView extends AppCompatActivity {
            LineDataSet temperature = new LineDataSet(temperatureEntries, "temperature");
            LineDataSet ph = new LineDataSet(phEntries, "pH");
             
-           chart.setData(new LineData(temperature, ph));
+           temp_chart.setData(new LineData(temperature));
+           ph_chart.setData(new LineData(ph));
         }
     }
     
