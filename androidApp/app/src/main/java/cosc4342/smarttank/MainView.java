@@ -90,7 +90,7 @@ public class MainView extends AppCompatActivity {
                String ph = entries.get(index).getString("ph");
                String[] time = entries.get(index).getString("t_stamp").split("\\w+-\\w+-\\w+", 2);
     
-               System.out.println(time[1]);
+//               System.out.println(time[1]);
                temperatureEntries.add(new Entry(index, Float.parseFloat(temp)));
                phEntries.add(new Entry(index, Float.parseFloat(ph)));
            }
@@ -157,7 +157,7 @@ public class MainView extends AppCompatActivity {
     
     public void getDataFromServer(){
         
-        
+        SmartTankRestClient.setAsync(true);
         SmartTankRestClient.get("/sensors", new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
