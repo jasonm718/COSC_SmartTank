@@ -30,6 +30,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,6 +45,8 @@ import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -311,44 +319,40 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
-    
-            String inputLine;
-            StringBuilder response = new StringBuilder();
-            OutputStreamWriter writer;
-            HttpURLConnection httpURLConnection;
-            try {
-        
-                URL api = new URL(api_url += "app_login");
-                httpURLConnection = (HttpURLConnection) api.openConnection();
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setDoOutput(true);
-                if(httpURLConnection.getResponseCode() == 200){
-                    System.out.println("connection successful");
-                    
-//                    writer = new OutputStreamWriter(httpURLConnection.getOutputStream());
-//
-//                    writer.write(mEmail);
-//                    writer.write(mPassword);
-//                    writer.flush();
-
+            
+            RequestParams credentials = new RequestParams();
+            
+            credentials.put("email", mEmail);
+            credentials.put("password", mPassword);
+            
+            
+            SmartTankRestClient.setAsync(false);
+            SmartTankRestClient.post("/app_login", credentials, new TextHttpResponseHandler() {
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    System.out.println(responseString);
+            
                 }
         
-                //part that listens to server's response
-                    BufferedReader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-    
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString)  {
+            
+                    try {
+                    JSONArray user_data = new JSONArray(responseString);
+                    for(int index = 0; index < user_data.length(); index++){
+                        System.out.println(user_data.getJSONObject(index).toString());
                     }
-        
-                httpURLConnection.disconnect();
-        
-            } catch (IOException e) {
-                System.out.println("something wrong with the url");
-                System.out.println(e.getMessage());
-            }
+                        
+                    }catch (JSONException e){
+                        System.out.println(e);
+                        System.out.println("passing data to JSON array didn't work");
+                    }
+                }
+            });
+    
             
-            System.out.println(response.toString());
             
+            //check response from server
             for(String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
                 if(pieces[0].equals(mEmail)) {
