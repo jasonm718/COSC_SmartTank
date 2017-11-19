@@ -118,7 +118,7 @@ public class HomeFragment extends Fragment {
         
         void populateFakeData(){
             for(int index = 0; index < 5; index++){
-                notifications.add(new Notification("Temperature", String.valueOf(80 + index), "11-26-2017", "LOW"));
+                notifications.add(new Notification("Temperature", String.valueOf(80 + index) + "F", "11-"+String.valueOf(20 + index)+"-2017", "LOW"));
             }
         }
     
@@ -128,7 +128,7 @@ public class HomeFragment extends Fragment {
         }
     
         @Override
-        public Object getItem(int position) {
+        public Notification getItem(int position) {
             return notifications.get(position);
         }
     
@@ -142,10 +142,8 @@ public class HomeFragment extends Fragment {
             
             if(row == null){
                 row = getActivity().getLayoutInflater().inflate(R.layout.notification_row, viewGroup, false);
-                
-                TextView paragraph = (TextView) row.findViewById(R.id.notification_paragraph);
-                
-                paragraph.setText("Lorem Ipsum Value  Date: Timestamp");
+                ((TextView) row.findViewById(R.id.notification_title)).setText(getItem(position).getSensorTitle());
+                ((TextView) row.findViewById(R.id.notification_paragraph)).setText(getItem(position).getSensorValue() + " Date: " + getItem(position).getTimestamp());
             }
             
             return row;
