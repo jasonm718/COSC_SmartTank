@@ -21,7 +21,7 @@
 
 
     <TextView
-        android:id="@+id/notification_title"
+        android:id="@+id/notifications_title"
         android:text="Notification List"
         android:textSize="20dp"
         android:layout_margin="@dimen/activity_horizontal_margin"

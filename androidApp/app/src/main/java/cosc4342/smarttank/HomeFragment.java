@@ -11,22 +11,28 @@ import android.widget.TextView;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 
 public class HomeFragment extends Fragment {
     
-    SensorAdapter sensors;
     ListView sensors_list;
+    
+    ListView notification_list;
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View root = inflater.inflate(R.layout.home_view, container, false);
         sensors_list = (ListView) root.findViewById(R.id.sensor_list);
-        sensors = new SensorAdapter();
-        populate(sensors);
-        sensors_list.setAdapter(sensors);
+        notification_list = (ListView) root.findViewById(R.id.notification_list);
+        
+        
+        
+        notification_list.setAdapter(new NotificationAdapter());
+        sensors_list.setAdapter(new SensorAdapter(new ArrayList<>(Arrays.asList("pH", "Temperature"))));
         
         
         return root;
@@ -54,6 +60,12 @@ public class HomeFragment extends Fragment {
     
     class SensorAdapter extends BaseAdapter{
         List<String> sensors;
+        
+        SensorAdapter(){}
+        
+        SensorAdapter(List<String> sensors){
+            this.sensors = sensors;
+        }
     
         public void setSensors(List<String> sensors) {
             this.sensors = sensors;
@@ -91,6 +103,53 @@ public class HomeFragment extends Fragment {
         }
         
         
+    }
+    
+    class NotificationAdapter extends BaseAdapter{
+        
+        List<Notification> notifications = new ArrayList<>();
+        
+        
+        NotificationAdapter(){
+            
+            populateFakeData();
+        }
+        
+        
+        void populateFakeData(){
+            for(int index = 0; index < 5; index++){
+                notifications.add(new Notification("Temperature", String.valueOf(80 + index), "11-26-2017", "LOW"));
+            }
+        }
+    
+        @Override
+        public int getCount() {
+            return notifications.size();
+        }
+    
+        @Override
+        public Object getItem(int position) {
+            return notifications.get(position);
+        }
+    
+        @Override
+        public long getItemId(int id) {
+            return id;
+        }
+    
+        @Override
+        public View getView(int position, View row, ViewGroup viewGroup) {
+            
+            if(row == null){
+                row = getActivity().getLayoutInflater().inflate(R.layout.notification_row, viewGroup, false);
+                
+                TextView paragraph = (TextView) row.findViewById(R.id.notification_paragraph);
+                
+                paragraph.setText("Lorem Ipsum Value  Date: Timestamp");
+            }
+            
+            return row;
+        }
     }
     
 }
