@@ -5,20 +5,6 @@
               android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/sensors_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:text="Your Sensors"
-        android:textSize="30dp"/>
-
-    <ListView
-        android:id="@+id/notification_list"
-        android:layout_margin="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <TextView
         android:text="Data Analytics"
         android:textSize="@dimen/activity_vertical_margin"
         android:layout_width="match_parent"
