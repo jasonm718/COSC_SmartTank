@@ -56,8 +56,6 @@ public class MainView extends AppCompatActivity {
         List<String> sensors = new ArrayList<>();
         sensors.add("pH");
         sensors.add("Temperature");
-        sensors.add("Nitrates");
-        sensors.add("Water Level");
         
         list.setSensors(sensors);
     }
@@ -84,15 +82,20 @@ public class MainView extends AppCompatActivity {
         public void updateChart(List<JSONObject> entries) throws JSONException{
            List<Entry> temperatureEntries = new ArrayList<>();
            List<Entry> phEntries = new ArrayList<>();
-           
-           for(int index = 0; index < entries.size(); index++) {
+           List<String> timestamps = new ArrayList<>();
+            
+           for(int index = 0; index < entries.size(); index++){
                String temp = entries.get(index).getString("Temp");
                String ph = entries.get(index).getString("ph");
-               String[] time = entries.get(index).getString("t_stamp").split("\\w+-\\w+-\\w+", 2);
-    
+//               String[] time = entries.get(index).getString("t_stamp").split("\\w+-\\w+-\\w+", 2);
+               timestamps.add(entries.get(index).getString("t_stamp"));
 //               System.out.println(time[1]);
-               temperatureEntries.add(new Entry(index, Float.parseFloat(temp)));
-               phEntries.add(new Entry(index, Float.parseFloat(ph)));
+               try {
+                   temperatureEntries.add(new Entry(index, Float.parseFloat(temp)));
+                   phEntries.add(new Entry(index, Float.parseFloat(ph)));
+               }catch(Exception e){ // sanity checks the data
+                   System.out.println(e.getMessage());
+               }
            }
            
            LineDataSet temperature = new LineDataSet(temperatureEntries, "temperature");
@@ -100,7 +103,12 @@ public class MainView extends AppCompatActivity {
             
            temp_chart.setData(new LineData(temperature));
            ph_chart.setData(new LineData(ph));
+            
+           temp_chart.getXAxis().setValueFormatter(new DateAxisFormatter(timestamps));
+           ph_chart.getXAxis().setValueFormatter(new DateAxisFormatter(timestamps));
         }
+        
+        
     }
     
     
