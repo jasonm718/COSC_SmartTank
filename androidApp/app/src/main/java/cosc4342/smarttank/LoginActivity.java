@@ -5,10 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -43,7 +40,6 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
-import static android.Manifest.permission.READ_CONTACTS;
 
 
 /**
@@ -71,7 +67,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-    String api_url = "https://smarttank.herokuapp.com/";
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -294,8 +289,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
     
     public void signIn(){
-        Intent mainView = new Intent(this, MainView.class);
-        startActivity(mainView);
+        Intent startView = new Intent(this, ViewsPager.class);
+        startActivity(startView);
     }
     
     /**
