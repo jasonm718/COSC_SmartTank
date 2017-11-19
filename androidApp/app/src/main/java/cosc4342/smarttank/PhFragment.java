@@ -21,17 +21,17 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
-public class DataFragment extends android.support.v4.app.Fragment {
+public class PhFragment extends android.support.v4.app.Fragment {
     
-    LineChart temp_chart;
+//    LineChart temp_chart;
     LineChart ph_chart;
     ChartDataUpdate model;
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View root = inflater.inflate(R.layout.data_view, container, false);
+        View root = inflater.inflate(R.layout.ph_view, container, false);
         model = new ChartDataUpdate();
-        temp_chart = (LineChart) root.findViewById(R.id.temperature_chart);
+//        temp_chart = (LineChart) root.findViewById(R.id.temperature_chart);
         ph_chart = (LineChart) root.findViewById(R.id.ph_chart);
         getDataFromServer();
         return root;
@@ -55,31 +55,31 @@ public class DataFragment extends android.support.v4.app.Fragment {
         }
         
         public void updateChart(List<JSONObject> entries) throws JSONException{
-            List<Entry> temperatureEntries = new ArrayList<>();
+//            List<Entry> temperatureEntries = new ArrayList<>();
             List<Entry> phEntries = new ArrayList<>();
             List<String> timestamps = new ArrayList<>();
             
             for(int index = 0; index < entries.size(); index++){
-                String temp = entries.get(index).getString("Temp");
+//                String temp = entries.get(index).getString("Temp");
                 String ph = entries.get(index).getString("ph");
 //               String[] time = entries.get(index).getString("t_stamp").split("\\w+-\\w+-\\w+", 2);
                 timestamps.add(entries.get(index).getString("t_stamp"));
 //               System.out.println(time[1]);
                 try {
-                    temperatureEntries.add(new Entry(index, Float.parseFloat(temp)));
+//                    temperatureEntries.add(new Entry(index, Float.parseFloat(temp)));
                     phEntries.add(new Entry(index, Float.parseFloat(ph)));
                 }catch(Exception e){ // sanity checks the data
                     System.out.println(e.getMessage());
                 }
             }
             
-            LineDataSet temperature = new LineDataSet(temperatureEntries, "temperature");
+//            LineDataSet temperature = new LineDataSet(temperatureEntries, "temperature");
             LineDataSet ph = new LineDataSet(phEntries, "pH");
             
-            temp_chart.setData(new LineData(temperature));
+//            temp_chart.setData(new LineData(temperature));
             ph_chart.setData(new LineData(ph));
             
-            temp_chart.getXAxis().setValueFormatter(new DateAxisFormatter(timestamps));
+//            temp_chart.getXAxis().setValueFormatter(new DateAxisFormatter(timestamps));
             ph_chart.getXAxis().setValueFormatter(new DateAxisFormatter(timestamps));
         }
     }

@@ -37,9 +37,9 @@ public class ViewsPager extends AppCompatActivity{
             switch (position){
                 
                 case 0: return new HomeFragment();
-                case 1: return new DataFragment();
-                case 2: return new DataFragment();
-                default: return new DataFragment();
+                case 1: return new TemperatureFragment();
+                case 2: return new PhFragment();
+                default: return new TemperatureFragment();
             }
         }
     
