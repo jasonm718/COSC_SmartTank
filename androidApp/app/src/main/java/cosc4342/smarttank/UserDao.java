@@ -8,6 +8,7 @@ import android.arch.persistence.room.Update;
 
 import java.util.List;
 
+
 @Dao
 public interface UserDao {
     
@@ -25,5 +26,5 @@ public interface UserDao {
     void insertUser(User user);
     
     @Insert
-    void insertAllUsers(User...users);
+    void insertAllUsers(List<User> users);
 }

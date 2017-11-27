@@ -15,7 +15,19 @@ public class User{
     
     private String password;
     
-    public String piSerial;
+    private String piSerial;
+    
+    public String name;
+    
+    
+    User(){}
+    
+    User(String email, String passcode, String name, String serial_number){
+        this.email = email;
+        this.name = name;
+        password = passcode;
+        piSerial = serial_number;
+    }
     
     
     public void setEmail(String newEmail){
@@ -24,6 +36,14 @@ public class User{
     
     public void setPassword(String newPassword){
         password = newPassword;
+    }
+    
+    public void setPiSerial(String serial_number){
+        piSerial = serial_number;
+    }
+    
+    public void setName(String newName){
+        name = newName;
     }
     
     
@@ -35,12 +55,13 @@ public class User{
         return password;
     }
     
-    public void addPiSerial(String serial_number){
-        piSerial = serial_number;
-    }
     
     public String getPiSerial(){
         return piSerial;
+    }
+    
+    public String getName(){
+        return name;
     }
 }
 

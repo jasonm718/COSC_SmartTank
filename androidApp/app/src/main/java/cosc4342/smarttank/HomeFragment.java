@@ -1,5 +1,10 @@
 package cosc4342.smarttank;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.LifecycleRegistry;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,15 +17,18 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements LifecycleOwner {
     
     ListView sensors_list;
     
     ListView notification_list;
+    
+    SensorModel sensorModel;
+    
+    LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -29,6 +37,7 @@ public class HomeFragment extends Fragment {
         sensors_list = (ListView) root.findViewById(R.id.sensor_list);
         notification_list = (ListView) root.findViewById(R.id.notification_list);
         
+        sensorModel = ViewModelProviders.of(this).get(SensorModel.class);
         
         
         notification_list.setAdapter(new NotificationAdapter());
@@ -39,15 +48,10 @@ public class HomeFragment extends Fragment {
     }
     
     
-    public void populate(SensorAdapter list){
-        
-        List<String> sensors = new ArrayList<>();
-        sensors.add("pH");
-        sensors.add("Temperature");
-        
-        list.setSensors(sensors);
+    @Override
+    public Lifecycle getLifecycle() {
+        return lifecycleRegistry;
     }
-    
     
     
     class SensorHolder{

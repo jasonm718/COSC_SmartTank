@@ -17,18 +17,14 @@ public class SmartTankRestClient {
     private static SyncHttpClient syncHttpClient = new SyncHttpClient();
     private static boolean async;
     
-    public static void setAsync(boolean async){
-        if(async){
-            SmartTankRestClient.async = true;
-        } else {
-            SmartTankRestClient.async = false;
-        }
+    public static void setAsync(boolean status){
+        async = status;
         
     }
     
     public static void get(String url, AsyncHttpResponseHandler responseHandler) {
         
-        if(SmartTankRestClient.async) {
+        if(async) {
             asyncHttpClient.get(getAbsoluteUrl(url), responseHandler);
         }else{
             syncHttpClient.get(getAbsoluteUrl(url), responseHandler);

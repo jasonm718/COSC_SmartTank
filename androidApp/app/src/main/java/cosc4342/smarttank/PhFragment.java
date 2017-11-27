@@ -1,7 +1,13 @@
 package cosc4342.smarttank;
 
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.LifecycleRegistry;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,100 +23,97 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
-public class PhFragment extends android.support.v4.app.Fragment {
+public class PhFragment extends android.support.v4.app.Fragment implements LifecycleOwner {
     
-//    LineChart temp_chart;
-    LineChart ph_chart;
-    ChartDataUpdate model;
+    static LineChart ph_chart;
+    
+    SensorModel sensorModel;
+    
+    private LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View root = inflater.inflate(R.layout.ph_view, container, false);
-        model = new ChartDataUpdate();
-//        temp_chart = (LineChart) root.findViewById(R.id.temperature_chart);
         ph_chart = (LineChart) root.findViewById(R.id.ph_chart);
-        getDataFromServer();
+        
+        lifecycleRegistry.markState(Lifecycle.State.CREATED);
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
+    
+        sensorModel = ViewModelProviders.of(this).get(SensorModel.class);
+        
+        lifecycleRegistry.addObserver(sensorModel);
+        
+        final Observer<List<Sensor>> sensorObserver =  new Observer<List<Sensor>>() {
+            @Override
+            public void onChanged(@Nullable List<Sensor> sensors) {
+                setChartData(sensors);
+            }
+        };
+    
+        sensorModel.fetchSensorData().observe(this, sensorObserver);
+        
         return root;
     }
     
     
-    class ChartDataUpdate {
+    public static void setChartData(List<Sensor> sensors) {
+        List<Entry> phEntries = new ArrayList<>();
+        List<String> timestamps = new ArrayList<>();
+        
+        for(int index = 0; index < sensors.size(); index++){
+            String ph = sensors.get(index).getTemperature();
+            String time = sensors.get(index).getTimestamp();
+            
+            try {
+                phEntries.add(new Entry(index, Float.parseFloat(ph)));
+                timestamps.add(time);
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+        }
+        
+        LineDataSet ph = new LineDataSet(phEntries, "pH");
+        
+        ph_chart.setData(new LineData(ph));
+        ph_chart.getXAxis().setValueFormatter(new DateAxisFormatter(timestamps));
+        
+    }
     
-        JSONArray sensor_data;
-        
-        public void setSensorData(JSONArray data) throws JSONException {
-            sensor_data = data;
-            List<JSONObject> entries = new ArrayList<>();
-            
-            
-            for(int index = 0; index < data.length(); index++) {
-                entries.add(data.getJSONObject(index));
-            }
-            
-            updateChart(entries);
-        }
-        
-        public void updateChart(List<JSONObject> entries) throws JSONException{
-//            List<Entry> temperatureEntries = new ArrayList<>();
-            List<Entry> phEntries = new ArrayList<>();
-            List<String> timestamps = new ArrayList<>();
-            
-            for(int index = 0; index < entries.size(); index++){
-//                String temp = entries.get(index).getString("Temp");
-                String ph = entries.get(index).getString("ph");
-//               String[] time = entries.get(index).getString("t_stamp").split("\\w+-\\w+-\\w+", 2);
-                timestamps.add(entries.get(index).getString("t_stamp"));
-//               System.out.println(time[1]);
-                try {
-//                    temperatureEntries.add(new Entry(index, Float.parseFloat(temp)));
-                    phEntries.add(new Entry(index, Float.parseFloat(ph)));
-                }catch(Exception e){ // sanity checks the data
-                    System.out.println(e.getMessage());
-                }
-            }
-            
-//            LineDataSet temperature = new LineDataSet(temperatureEntries, "temperature");
-            LineDataSet ph = new LineDataSet(phEntries, "pH");
-            
-//            temp_chart.setData(new LineData(temperature));
-            ph_chart.setData(new LineData(ph));
-            
-//            temp_chart.getXAxis().setValueFormatter(new DateAxisFormatter(timestamps));
-            ph_chart.getXAxis().setValueFormatter(new DateAxisFormatter(timestamps));
-        }
+    @Override
+    public void onStart(){
+        super.onStart();
+        lifecycleRegistry.markState(Lifecycle.State.STARTED);
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
     }
     
     
-    public void getDataFromServer(){
-        
-        SmartTankRestClient.setAsync(true);
-        SmartTankRestClient.get("/sensors", new TextHttpResponseHandler() {
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                System.out.println(responseString);
-                
-            }
-            
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString)  {
-                
-                try {
-//                    JSONArray sensor_data = new JSONArray(responseString);
-//                    for(int index = 0; index < sensor_data.length(); index++){
-//                        System.out.println(sensor_data.getJSONObject(index).toString());
-//                    }
-                    
-                    model.setSensorData(new JSONArray(responseString));
-                }catch (JSONException e){
-                    System.out.println(e);
-                    System.out.println("passing data to JSON array didn't work");
-                }
-            }
-        });
+    
+    
+    @Override
+    public void onResume() {
+        super.onResume();
+        lifecycleRegistry.markState(Lifecycle.State.RESUMED);
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME);
     }
-        
+    
+    
+    
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        lifecycleRegistry.markState(Lifecycle.State.DESTROYED);
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY);
+    }
+    
+    
+    
+    @Override
+    public Lifecycle getLifecycle() {
+        return lifecycleRegistry;
+    }
 }

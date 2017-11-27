@@ -10,10 +10,19 @@ public class Sensor {
     public String timestamp;
     public String ph;
     public String temperature;
+    public String piserial;
+    @PrimaryKey
+    public String id;
     
-    @PrimaryKey @NonNull
-    public String piserial =  "-1";
+    Sensor(){}
     
+    Sensor(String temp, String ph, String time, String piserial, String id){
+        temperature = temp;
+        this.ph = ph;
+        timestamp = time;
+        this.piserial = piserial;
+        this.id = id;
+    }
     
     public String getTimestamp(){
         return timestamp;
