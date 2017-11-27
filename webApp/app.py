@@ -39,7 +39,7 @@ while True:
     }
 
     db.smart_tank.insert(data)
-    time.sleep(5)
+    time.sleep(1)
 
 """
 # this is an example on how to insert data into db
