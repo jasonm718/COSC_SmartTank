@@ -115,6 +115,7 @@ public class SensorModel extends AndroidViewModel implements LifecycleObserver {
                                 if(index >= 4000){
                                     break;
                                 }
+                                
                                 String temp = sensor_data.getJSONObject(index).getString("Temp");
                                 String ph = sensor_data.getJSONObject(index).getString("ph");
                                 String time = sensor_data.getJSONObject(index).getString("t_stamp");
@@ -292,7 +293,7 @@ public class SensorModel extends AndroidViewModel implements LifecycleObserver {
                     ViewsPager.sendNotification("Ph", String.valueOf(ph), time, context, getApplication().getSystemService(NOTIFICATION_SERVICE));
                 }
                 
-                if(ph < 4.00){
+                if(ph < 5.50){
                     ViewsPager.sendNotification("Ph", String.valueOf(ph), time, context, getApplication().getSystemService(NOTIFICATION_SERVICE));
                 }
                 
