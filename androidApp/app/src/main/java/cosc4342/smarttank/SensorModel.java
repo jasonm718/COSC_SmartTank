@@ -112,7 +112,7 @@ public class SensorModel extends AndroidViewModel implements LifecycleObserver {
                             List<Sensor> sensors = new ArrayList<Sensor>();
                             for(int index = 0; index < sensor_data.length(); index++) {
                                 
-                                if(index >= 6000){
+                                if(index >= 4000){
                                     break;
                                 }
                                 String temp = sensor_data.getJSONObject(index).getString("Temp");
@@ -275,7 +275,7 @@ public class SensorModel extends AndroidViewModel implements LifecycleObserver {
         System.out.println(sensor_data.size());
         List<Notification> notification_data = new ArrayList<>();
         for(int index = 0; index < sensor_data.size(); index++){
-            if(index >= 5000){
+            if(index >= 4000){
                 break;
             }
             try {

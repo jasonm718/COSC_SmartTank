@@ -104,7 +104,7 @@ public class ViewsPager extends AppCompatActivity {
     
     public static void sendNotification(String title, String value, String timestamp, Context context, Object notification_service){
         
-        if(!notifications.contains(timestamp)) {
+        if(!notifications.contains(timestamp) && notification_ids < 25) {
             
             mBuilder = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.smartanklogo)
