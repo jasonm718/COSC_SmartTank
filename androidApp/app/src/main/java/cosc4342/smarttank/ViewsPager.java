@@ -38,7 +38,7 @@ public class ViewsPager extends AppCompatActivity {
     public static List<Sensor> sensors = new ArrayList<>();
     private static NotificationCompat.Builder mBuilder;
     private static List<String> notifications = new ArrayList<>();
-    private static int notification_ids = 0;
+    public static int notification_ids = 0;
     
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -104,7 +104,7 @@ public class ViewsPager extends AppCompatActivity {
     
     public static void sendNotification(String title, String value, String timestamp, Context context, Object notification_service){
         
-        if(!notifications.contains(timestamp) && notification_ids < 25) {
+        if(!notifications.contains(timestamp)) {
             
             mBuilder = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.smartanklogo)
