@@ -4,8 +4,9 @@ package cosc4342.smarttank;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LifecycleRegistry;
-import android.arch.lifecycle.LiveData;
+
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -21,14 +22,12 @@ import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
+
 
 public class TemperatureFragment extends android.support.v4.app.Fragment implements LifecycleOwner{
     
@@ -43,28 +42,80 @@ public class TemperatureFragment extends android.support.v4.app.Fragment impleme
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View root = inflater.inflate(R.layout.temperature_view, container, false);
         temp_chart = (LineChart) root.findViewById(R.id.temperature_chart);
-    
         
-        sensorModel = ViewModelProviders.of(this).get(SensorModel.class);
-
+        
         lifecycleRegistry = new LifecycleRegistry(this);
         lifecycleRegistry.markState(Lifecycle.State.CREATED);
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
-
+        sensorModel = ViewModelProviders.of(this).get(SensorModel.class);
+    
         lifecycleRegistry.addObserver(sensorModel);
-
-
-        final Observer<List<Sensor>> sensorObserver =  new Observer<List<Sensor>>() {
-            @Override
-            public void onChanged(@Nullable List<Sensor> sensors) {
-                setChartData(sensors);
-            }
-        };
-
-        sensorModel.fetchSensorData().observe(this, sensorObserver);
+//
+//
+//
+//        final Observer<List<Sensor>> sensorObserver =  new Observer<List<Sensor>>() {
+//            @Override
+//            public void onChanged(@Nullable List<Sensor> sensors) {
+//                System.out.println(sensors.toString());
+////                setChartData(sensors);
+//                if(sensors.isEmpty()){
+//                    System.out.println("sensors empty received");
+//                }else {
+//                    if(sensorModel.dataIsValid(sensors)) {
+//                        setChartData(sensors);
+//                    } else {
+////                        setChartData(sensors);
+//                        sensorModel.sendNotification();
+//                    }
+//                }
+//            }
+//        };
+//
+//        sensorModel.all_sensors.observe(this, sensorObserver);
+//        lifecycleRegistry.addObserver(sensorModel);
+//
+//        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
+        
+        
         
         
         return root;
+    }
+    
+    private void populateSensors() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SmartTankRestClient.setAsync(false);
+                SmartTankRestClient.get("/sensors", new TextHttpResponseHandler() {
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    
+                    }
+                
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    
+                        try {
+                            JSONArray sensor_data = new JSONArray(responseString);
+                            List<Sensor> sensors = new ArrayList<Sensor>();
+                            for(int index = 0; index < sensor_data.length(); index++) {
+                                String temp = sensor_data.getJSONObject(index).getString("Temp");
+                                String ph = sensor_data.getJSONObject(index).getString("ph");
+                                String time = sensor_data.getJSONObject(index).getString("t_stamp");
+                                String id = sensor_data.getJSONObject(index).getString("_id");
+                                String serial = sensor_data.getJSONObject(index).getString("serial");
+                                sensors.add(new Sensor(temp, ph, time, serial, id));
+                            
+                            }
+                            setChartData(sensors);
+                        } catch (JSONException e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }
+                });
+            
+            }
+        }).start();
     }
     
     @Override
@@ -98,6 +149,7 @@ public class TemperatureFragment extends android.support.v4.app.Fragment impleme
    
     
     public static void setChartData(List<Sensor> sensors) {
+        System.out.println("temp set chart is called");
         List<Entry> temperatureEntries = new ArrayList<>();
         List<String> timestamps = new ArrayList<>();
         
@@ -117,6 +169,12 @@ public class TemperatureFragment extends android.support.v4.app.Fragment impleme
         
         temp_chart.setData(new LineData(temperature));
         temp_chart.getXAxis().setValueFormatter(new DateAxisFormatter(timestamps));
+        
+        temp_chart.getAxisLeft().setAxisMinimum((float) 65.00);
+        temp_chart.getAxisLeft().setAxisMaximum((float) 85.00);
+    
+        temp_chart.getAxisRight().setAxisMinimum((float) 65.00);
+        temp_chart.getAxisRight().setAxisMaximum((float) 85.00);
     }
     
     

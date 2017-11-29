@@ -3,7 +3,6 @@ package cosc4342.smarttank;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LifecycleRegistry;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -24,11 +23,16 @@ public class HomeFragment extends Fragment implements LifecycleOwner {
     
     ListView sensors_list;
     
-    ListView notification_list;
+    public ListView notification_list;
     
     SensorModel sensorModel;
     
     LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
+    
+    public static NotificationAdapter notificationAdapter;
+    
+    
+    public static List<Notification> notificationsCached;
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,9 +42,16 @@ public class HomeFragment extends Fragment implements LifecycleOwner {
         notification_list = (ListView) root.findViewById(R.id.notification_list);
         
         sensorModel = ViewModelProviders.of(this).get(SensorModel.class);
-        
-        
-        notification_list.setAdapter(new NotificationAdapter());
+        sensorModel.setSensorView((ListView) root.findViewById(R.id.sensor_list));
+        sensorModel.setNotificationView((ListView) root.findViewById(R.id.notification_list));
+        if(notificationAdapter == null) {
+            notificationAdapter = new NotificationAdapter();
+            notification_list.setAdapter(notificationAdapter);
+            
+            
+        } //else {
+//            notification_list.setAdapter(notificationAdapter);
+//        }
         sensors_list.setAdapter(new SensorAdapter(new ArrayList<>(Arrays.asList("pH", "Temperature"))));
         
         
@@ -109,21 +120,28 @@ public class HomeFragment extends Fragment implements LifecycleOwner {
         
     }
     
+//    public static void populateNotificationList(){
+//        notificationAdapter.notifyDataSetChanged();
+//        notificationAdapter.notifyDataSetInvalidated();
+//    }
+    
+    
+    
     class NotificationAdapter extends BaseAdapter{
         
         List<Notification> notifications = new ArrayList<>();
         
         
         NotificationAdapter(){
-            
-            populateFakeData();
+        }
+        
+        List<Notification> getNotifications(){
+            return notifications;
         }
         
         
-        void populateFakeData(){
-            for(int index = 0; index < 5; index++){
-                notifications.add(new Notification("Temperature", String.valueOf(80 + index) + "F", "11-"+String.valueOf(20 + index)+"-2017", "LOW"));
-            }
+        void populateAdapter(List<Notification> notifications){
+            this.notifications = notifications;
         }
     
         @Override

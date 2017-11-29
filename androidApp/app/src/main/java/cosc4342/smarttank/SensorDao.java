@@ -17,13 +17,10 @@ public interface SensorDao {
     @Query("Select * from Sensors")
     List<Sensor> fetchAllSensorData();
     
-    //get temperature data
-    @Query("Select * from Sensors where piserial = :serial_number and timestamp > :timestamp")
-    LiveData<List<Sensor>> fetchTemperatureByTimestamp(String serial_number, String timestamp);
+    //get sensor data based on timestamp
+    @Query("Select * from Sensors where DATE(timestamp) > DATE(:timestamp, '-1 day')")
+    List<Sensor> fetchSensorsByTimestamp(String timestamp);
     
-    //get ph data
-    @Query("Select * from Sensors where piserial = :serial_number and timestamp > :timestamp")
-    LiveData<List<Sensor>> fetchPhByTimestamp(String serial_number, String timestamp);
     
     
     @Insert

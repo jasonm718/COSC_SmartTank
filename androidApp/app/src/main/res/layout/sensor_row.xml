@@ -21,8 +21,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Current Level - Stable"/>
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
     <LinearLayout
@@ -31,10 +30,11 @@
         android:layout_weight="1"
         android:gravity="right">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/sensor_display"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:src="@color/green"
             android:background="@mipmap/ic_launcher_round"/>
     </LinearLayout>
 
