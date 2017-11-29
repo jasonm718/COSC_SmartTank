@@ -158,18 +158,16 @@ public class SensorModel extends AndroidViewModel implements LifecycleObserver {
 //
     }
     
-    private void populateNotificationList(List<Notification> newNotifications) {
+//    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void populateNotificationList() {
 
 //        if(HomeFragment.notificationAdapter != null) {
 //            home.notificationAdapter.populateAdapter(newNotifications);
 //            home.notification_list.setAdapter(home.notificationAdapter);
 //        }
-        
-        if(notifications != null){
-            HomeFragment.notificationAdapter.populateAdapter(newNotifications);
-            notifications.setAdapter(HomeFragment.notificationAdapter);
-            notifications.invalidate();
-        }
+//        if(notifications != null){
+            HomeFragment.populateNotificationList(notifications);
+//        }
         
 //        HomeFragment.notificationAdapter.populateAdapter(newNotifications);
 //        System.out.println(HomeFragment.notificationAdapter.getNotifications());
@@ -294,6 +292,10 @@ public class SensorModel extends AndroidViewModel implements LifecycleObserver {
                     ViewsPager.sendNotification("Ph", String.valueOf(ph), time, context, getApplication().getSystemService(NOTIFICATION_SERVICE));
                 }
                 
+                if(ph < 4.00){
+                    ViewsPager.sendNotification("Ph", String.valueOf(ph), time, context, getApplication().getSystemService(NOTIFICATION_SERVICE));
+                }
+                
                 
                 if(temperature > 75.00){
                     ViewsPager.sendNotification("Temperature", String.valueOf(temperature), time, context, getApplication().getSystemService(NOTIFICATION_SERVICE));
@@ -304,6 +306,10 @@ public class SensorModel extends AndroidViewModel implements LifecycleObserver {
                 else if( temperature > 85.00){
                     ViewsPager.sendNotification("Temperature", String.valueOf(temperature), time, context, getApplication().getSystemService(NOTIFICATION_SERVICE));
                 }
+    
+                if(temperature < 60.00){
+                    ViewsPager.sendNotification("Temperature", String.valueOf(temperature), time, context, getApplication().getSystemService(NOTIFICATION_SERVICE));
+                }
                 
                 
             }catch(Exception e){
@@ -312,8 +318,10 @@ public class SensorModel extends AndroidViewModel implements LifecycleObserver {
                         
         }
 //        System.out.println(notification_data);
-        populateNotificationList(notification_data);
+        HomeFragment.notificationAdapter.populateAdapter(notification_data);
+//        populateNotificationList(notification_data);
     }
+    
     
     
     public void setSensorView(ListView view) {

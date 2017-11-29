@@ -145,7 +145,6 @@ public class PhFragment extends android.support.v4.app.Fragment implements Lifec
     public void onStart(){
         super.onStart();
         lifecycleRegistry.markState(Lifecycle.State.STARTED);
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
     }
     
     
@@ -155,7 +154,6 @@ public class PhFragment extends android.support.v4.app.Fragment implements Lifec
     public void onResume() {
         super.onResume();
         lifecycleRegistry.markState(Lifecycle.State.RESUMED);
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME);
     }
     
     
@@ -164,7 +162,6 @@ public class PhFragment extends android.support.v4.app.Fragment implements Lifec
     public void onDestroy(){
         super.onDestroy();
         lifecycleRegistry.markState(Lifecycle.State.DESTROYED);
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY);
     }
     
     

@@ -38,6 +38,7 @@ public class ViewsPager extends AppCompatActivity {
     public static List<Sensor> sensors = new ArrayList<>();
     private static NotificationCompat.Builder mBuilder;
     private static List<String> notifications = new ArrayList<>();
+    private static int notification_ids = 0;
     
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -112,11 +113,9 @@ public class ViewsPager extends AppCompatActivity {
     
             
             NotificationManager notificationManagerCompat = (NotificationManager) notification_service;
-            if(title == "Ph") {
-                notificationManagerCompat.notify(1, mBuilder.build());
-            }else {
-                notificationManagerCompat.notify(2, mBuilder.build());
-            }
+            notificationManagerCompat.notify(notification_ids, mBuilder.build());
+            
+            notification_ids += 1;
             
             notifications.add(timestamp);
         }

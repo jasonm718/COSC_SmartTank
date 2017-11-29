@@ -42,6 +42,8 @@ public class HomeFragment extends Fragment implements LifecycleOwner {
         notification_list = (ListView) root.findViewById(R.id.notification_list);
         
         sensorModel = ViewModelProviders.of(this).get(SensorModel.class);
+        lifecycleRegistry.addObserver(sensorModel);
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
         sensorModel.setSensorView((ListView) root.findViewById(R.id.sensor_list));
         sensorModel.setNotificationView((ListView) root.findViewById(R.id.notification_list));
         if(notificationAdapter == null) {
@@ -56,6 +58,11 @@ public class HomeFragment extends Fragment implements LifecycleOwner {
         
         
         return root;
+    }
+    @Override
+    public void onStart(){
+        super.onStart();
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
     }
     
     
@@ -120,10 +127,11 @@ public class HomeFragment extends Fragment implements LifecycleOwner {
         
     }
     
-//    public static void populateNotificationList(){
-//        notificationAdapter.notifyDataSetChanged();
-//        notificationAdapter.notifyDataSetInvalidated();
-//    }
+    public static void populateNotificationList(ListView listView){
+        listView.invalidate();
+        notificationAdapter.notifyDataSetChanged();
+        notificationAdapter.notifyDataSetInvalidated();
+    }
     
     
     
